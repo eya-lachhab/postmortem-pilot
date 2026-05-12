@@ -10,7 +10,6 @@ from jinja2 import Template
 
 from postmortem_pilot import __version__
 
-
 TEMPLATE = """\
 # 🚨 Postmortem Report
 
