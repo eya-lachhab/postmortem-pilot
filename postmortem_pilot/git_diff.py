@@ -51,12 +51,13 @@ def get_git_diff(
         changed_files = []
 
         for diff_item in diff:
+            raw_type = diff_item.change_type or ""
             change_type = {
                 "A": "added",
                 "D": "deleted",
                 "M": "modified",
                 "R": "renamed",
-            }.get(diff_item.change_type, "changed")
+            }.get(raw_type, "changed")
             changed_files.append(
                 {
                     "path": diff_item.b_path or diff_item.a_path,
