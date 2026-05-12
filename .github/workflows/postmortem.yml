@@ -2,7 +2,7 @@ name: 🚨 Postmortem Pilot — Auto-generate deploy report
 
 on:
   push:
-    branches: [main]
+    branches: [master, main]
   # Also allow manual trigger with custom inputs
   workflow_dispatch:
     inputs:
