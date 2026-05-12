@@ -134,7 +134,9 @@ def run(
                 "  [yellow]ℹ No GROQ_API_KEY found — using template mode.[/yellow]"
             )
         else:
-            console.print("  [yellow]ℹ --no-llm flag set — using template mode.[/yellow]")
+            console.print(
+                "  [yellow]ℹ --no-llm flag set — using template mode.[/yellow]"
+            )
         ai_summary = None
     else:
         console.print("  [cyan]↗ Calling Groq (Llama 3)...[/cyan]")
@@ -142,7 +144,9 @@ def run(
         if ai_summary:
             console.print("  [green]✓ AI summary generated.[/green]")
         else:
-            console.print("  [yellow]⚠ AI summary failed — falling back to template.[/yellow]")
+            console.print(
+                "  [yellow]⚠ AI summary failed — falling back to template.[/yellow]"
+            )
 
     # --- Render report ---
     report_path = render_report(
@@ -170,7 +174,11 @@ def doctor() -> None:
     console.print("\n[bold cyan]🩺 postmortem-pilot doctor[/bold cyan]\n")
 
     checks = [
-        ("GROQ_API_KEY", bool(os.environ.get("GROQ_API_KEY")), "Required for AI summaries (free at console.groq.com)"),
+        (
+            "GROQ_API_KEY",
+            bool(os.environ.get("GROQ_API_KEY")),
+            "Required for AI summaries (free at console.groq.com)",
+        ),
         ("git", _check_git(), "Git must be installed"),
         ("Python >= 3.9", sys.version_info >= (3, 9), f"Current: {sys.version}"),
     ]
@@ -183,13 +191,16 @@ def doctor() -> None:
             all_ok = False
 
     if all_ok:
-        console.print("\n[bold green]All checks passed! You're ready to fly. ✈[/bold green]")
+        console.print(
+            "\n[bold green]All checks passed! You're ready to fly. ✈[/bold green]"
+        )
     else:
         console.print("\n[yellow]Some checks failed — see notes above.[/yellow]")
 
 
 def _check_git() -> bool:
     import shutil
+
     return shutil.which("git") is not None
 
 

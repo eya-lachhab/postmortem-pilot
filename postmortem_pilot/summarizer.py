@@ -15,7 +15,8 @@ MODEL = "llama3-8b-8192"  # Free, fast, great for summarization
 def _build_prompt(diff_data: dict[str, Any], log_data: dict[str, Any]) -> str:
     """Build a concise prompt for the LLM."""
     changed_files = "\n".join(
-        f"  - [{f['change_type']}] {f['path']}" for f in diff_data.get("changed_files", [])[:20]
+        f"  - [{f['change_type']}] {f['path']}"
+        for f in diff_data.get("changed_files", [])[:20]
     )
 
     top_errors = "\n".join(
@@ -31,30 +32,30 @@ def _build_prompt(diff_data: dict[str, Any], log_data: dict[str, Any]) -> str:
     prompt = f"""You are an expert DevOps engineer writing a concise post-deploy incident summary.
 
 ## Deploy Stats
-- Files changed: {diff_data.get('files_changed', 0)}
-- Insertions: +{diff_data.get('insertions', 0)}
-- Deletions: -{diff_data.get('deletions', 0)}
+- Files changed: {diff_data.get("files_changed", 0)}
+- Insertions: +{diff_data.get("insertions", 0)}
+- Deletions: -{diff_data.get("deletions", 0)}
 
 ## Changed Files
-{changed_files or '  (none detected)'}
+{changed_files or "  (none detected)"}
 
 ## Log Analysis
-- Total lines scanned: {log_data.get('total_lines', 0)}
-- Errors: {log_data.get('error_count', 0)}
-- Warnings: {log_data.get('warning_count', 0)}
+- Total lines scanned: {log_data.get("total_lines", 0)}
+- Errors: {log_data.get("error_count", 0)}
+- Warnings: {log_data.get("warning_count", 0)}
 
 ## Top Recurring Errors
-{top_errors or '  (none)'}
+{top_errors or "  (none)"}
 
 ## Notable Events
-{notable or '  (none)'}
+{notable or "  (none)"}
 
 ## Sample Error Lines
-{sample_errors or '  (none)'}
+{sample_errors or "  (none)"}
 
 ## Diff Snippet
 ```
-{diff_snippet or '(no diff available)'}
+{diff_snippet or "(no diff available)"}
 ```
 
 ---

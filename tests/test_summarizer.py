@@ -42,7 +42,7 @@ def test_build_prompt_contains_key_data():
     prompt = _build_prompt(MOCK_DIFF, MOCK_LOGS)
     assert "3" in prompt  # files changed
     assert "42" in prompt  # insertions
-    assert "5" in prompt   # error count
+    assert "5" in prompt  # error count
     assert "connection refused" in prompt
 
 
@@ -52,7 +52,11 @@ def test_summarize_mock_success():
     mock_response.raise_for_status = MagicMock()
     mock_response.json.return_value = {
         "choices": [
-            {"message": {"content": "TL;DR: Deploy went sideways. DB connection dropped."}}
+            {
+                "message": {
+                    "content": "TL;DR: Deploy went sideways. DB connection dropped."
+                }
+            }
         ]
     }
 
@@ -67,7 +71,9 @@ def test_summarize_handles_api_error():
     """Should return None on API failure."""
     import requests as req
 
-    with patch("postmortem_pilot.summarizer.requests.post", side_effect=req.exceptions.Timeout):
+    with patch(
+        "postmortem_pilot.summarizer.requests.post", side_effect=req.exceptions.Timeout
+    ):
         result = summarize(diff_data=MOCK_DIFF, log_data=MOCK_LOGS, api_key="fake-key")
 
     assert result is None

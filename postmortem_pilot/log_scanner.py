@@ -9,7 +9,9 @@ from typing import Any
 
 # Patterns for log level detection
 LEVEL_PATTERNS = {
-    "error": re.compile(r"\b(ERROR|CRITICAL|FATAL|Exception|Traceback|5\d\d)\b", re.IGNORECASE),
+    "error": re.compile(
+        r"\b(ERROR|CRITICAL|FATAL|Exception|Traceback|5\d\d)\b", re.IGNORECASE
+    ),
     "warning": re.compile(r"\b(WARN(?:ING)?|DEPRECATED|4\d\d)\b", re.IGNORECASE),
     "info": re.compile(r"\b(INFO|DEBUG)\b", re.IGNORECASE),
 }
@@ -71,7 +73,9 @@ def scan_logs(log_path: str, max_lines: int = 5000) -> dict[str, Any]:
                 if LEVEL_PATTERNS["error"].search(line):
                     result["error_count"] += 1
                     # Normalise the line for grouping (strip timestamps)
-                    normalised = re.sub(r"\d{4}-\d{2}-\d{2}[T ]\d{2}:\d{2}:\d{2}[^\s]*", "", line).strip()
+                    normalised = re.sub(
+                        r"\d{4}-\d{2}-\d{2}[T ]\d{2}:\d{2}:\d{2}[^\s]*", "", line
+                    ).strip()
                     error_counter[normalised] += 1
                     if len(sample_errors) < 10:
                         sample_errors.append(line)

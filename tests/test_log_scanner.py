@@ -32,13 +32,15 @@ def test_scan_logs_empty_file():
 
 def test_scan_logs_counts_errors():
     """Should correctly count ERROR lines."""
-    log = "\n".join([
-        "2026-01-01 INFO Starting up",
-        "2026-01-01 ERROR Something broke",
-        "2026-01-01 ERROR Another error",
-        "2026-01-01 WARN Slow query",
-        "2026-01-01 INFO All good",
-    ])
+    log = "\n".join(
+        [
+            "2026-01-01 INFO Starting up",
+            "2026-01-01 ERROR Something broke",
+            "2026-01-01 ERROR Another error",
+            "2026-01-01 WARN Slow query",
+            "2026-01-01 INFO All good",
+        ]
+    )
     path = _write_log(log)
     result = scan_logs(path)
     assert result["error_count"] == 2
@@ -49,11 +51,13 @@ def test_scan_logs_counts_errors():
 
 def test_scan_logs_detects_notable_events():
     """Should flag connection refused and OOM events."""
-    log = "\n".join([
-        "2026-01-01 ERROR connection refused to db:5432",
-        "2026-01-01 ERROR OutOfMemory in worker process",
-        "2026-01-01 INFO Normal line",
-    ])
+    log = "\n".join(
+        [
+            "2026-01-01 ERROR connection refused to db:5432",
+            "2026-01-01 ERROR OutOfMemory in worker process",
+            "2026-01-01 INFO Normal line",
+        ]
+    )
     path = _write_log(log)
     result = scan_logs(path)
     assert len(result["notable_events"]) >= 2

@@ -7,7 +7,9 @@ from pathlib import Path
 from typing import Any
 
 
-def get_git_diff(repo_path: str = ".", before: str = "HEAD~1", after: str = "HEAD") -> dict[str, Any]:
+def get_git_diff(
+    repo_path: str = ".", before: str = "HEAD~1", after: str = "HEAD"
+) -> dict[str, Any]:
     """
     Get git diff stats and a summarised list of changed files between two refs.
 
@@ -55,7 +57,12 @@ def get_git_diff(repo_path: str = ".", before: str = "HEAD~1", after: str = "HEA
                 "M": "modified",
                 "R": "renamed",
             }.get(diff_item.change_type, "changed")
-            changed_files.append({"path": diff_item.b_path or diff_item.a_path, "change_type": change_type})
+            changed_files.append(
+                {
+                    "path": diff_item.b_path or diff_item.a_path,
+                    "change_type": change_type,
+                }
+            )
 
         # Extract insertions/deletions from stat summary
         stat_match = re.search(r"(\d+) insertion", diff_text)
