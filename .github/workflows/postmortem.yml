@@ -1,0 +1,109 @@
+name: 🚨 Postmortem Pilot — Auto-generate deploy report
+
+on:
+  push:
+    branches: [main]
+  # Also allow manual trigger with custom inputs
+  workflow_dispatch:
+    inputs:
+      before_ref:
+        description: "Git ref before deploy (e.g. HEAD~1 or commit SHA)"
+        required: false
+        default: "HEAD~1"
+      after_ref:
+        description: "Git ref after deploy (e.g. HEAD or commit SHA)"
+        required: false
+        default: "HEAD"
+      log_file:
+        description: "Path to log file (leave empty to use example_logs/sample.log)"
+        required: false
+        default: ""
+
+permissions:
+  contents: write       # needed to commit postmortem.md back
+  pull-requests: write  # needed to post PR comments
+
+jobs:
+  postmortem:
+    name: 📋 Generate Postmortem
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 📥 Checkout full history
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0   # full history needed for git diff
+
+      - name: 🐍 Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - name: 📦 Install postmortem-pilot
+        run: |
+          pip install -e ".[dev]"
+
+      - name: 🔍 Run postmortem-pilot
+        env:
+          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+        run: |
+          BEFORE="${{ github.event.inputs.before_ref || 'HEAD~1' }}"
+          AFTER="${{ github.event.inputs.after_ref || 'HEAD' }}"
+          LOG_FILE="${{ github.event.inputs.log_file }}"
+
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+          echo "  🚨 postmortem-pilot starting"
+          echo "  Diff: $BEFORE → $AFTER"
+          echo "  Logs: ${LOG_FILE:-example_logs/sample.log}"
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+
+          if [ -n "$LOG_FILE" ]; then
+            postmortem-pilot run \
+              --before "$BEFORE" \
+              --after "$AFTER" \
+              --log-file "$LOG_FILE" \
+              --output postmortem.md
+          else
+            postmortem-pilot run \
+              --before "$BEFORE" \
+              --after "$AFTER" \
+              --output postmortem.md
+          fi
+
+      - name: 📄 Show generated postmortem
+        run: |
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+          echo "  Generated postmortem.md:"
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+          cat postmortem.md
+
+      - name: 💾 Commit postmortem.md back to repo
+        run: |
+          git config user.name  "postmortem-pilot[bot]"
+          git config user.email "postmortem-pilot[bot]@users.noreply.github.com"
+          git add postmortem.md
+          if git diff --staged --quiet; then
+            echo "No changes to postmortem.md — skipping commit."
+          else
+            git commit -m "🚨 postmortem: auto-generated report for $(git rev-parse --short HEAD) [skip ci]"
+            git push
+            echo "✅ postmortem.md committed."
+          fi
+
+      - name: 💬 Post summary as workflow summary
+        if: always()
+        run: |
+          echo "## 🚨 Postmortem Report" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| | |" >> $GITHUB_STEP_SUMMARY
+          echo "|---|---|" >> $GITHUB_STEP_SUMMARY
+          echo "| **Commit** | \`$(git rev-parse --short HEAD)\` |" >> $GITHUB_STEP_SUMMARY
+          echo "| **Report** | \`postmortem.md\` committed to repo |" >> $GITHUB_STEP_SUMMARY
+          echo "| **AI Mode** | $([ -n '${{ secrets.GROQ_API_KEY }}' ] && echo '✅ Groq/Llama3' || echo '📝 Template mode') |" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### Preview" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          head -40 postmortem.md >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "*See full report in \`postmortem.md\`*" >> $GITHUB_STEP_SUMMARY
