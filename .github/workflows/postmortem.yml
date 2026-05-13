@@ -51,7 +51,21 @@ jobs:
           AFTER="${{ github.event.inputs.after_ref || 'HEAD' }}"
           LOG_FILE="${{ github.event.inputs.log_file }}"
 
-          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-          echo "  🚨 postmortem-pilot starting"
-          echo "  Diff: $BEFORE → $AFTER"
-          echo "  Logs​​​​​​​​​​​​​​​​
+          echo "================================================"
+          echo "  postmortem-pilot starting"
+          echo "  Diff: $BEFORE -> $AFTER"
+          echo "  Logs: ${LOG_FILE:-example_logs/sample.log}"
+          echo "================================================"
+
+          if [ -n "$LOG_FILE" ]; then
+            postmortem-pilot run \
+              --before "$BEFORE" \
+              --after "$AFTER" \
+              --log-file "$LOG_FILE" \
+              --output postmortem.md
+          else
+            postmortem-pilot run \
+              --before "$BEFORE" \
+              --after "$AFTER" \
+              --output postmortem.md
+          fi
