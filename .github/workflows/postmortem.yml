@@ -2,8 +2,7 @@ name: 🚨 Postmortem Pilot — Auto-generate deploy report
 
 on:
   push:
-    branches: [master, main]
-  # Also allow manual trigger with custom inputs
+    branches: [main]
   workflow_dispatch:
     inputs:
       before_ref:
@@ -20,8 +19,8 @@ on:
         default: ""
 
 permissions:
-  contents: write       # needed to commit postmortem.md back
-  pull-requests: write  # needed to post PR comments
+  contents: write
+  pull-requests: write
 
 jobs:
   postmortem:
@@ -32,7 +31,7 @@ jobs:
       - name: 📥 Checkout full history
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0   # full history needed for git diff
+          fetch-depth: 0
 
       - name: 🐍 Set up Python
         uses: actions/setup-python@v5
@@ -55,55 +54,4 @@ jobs:
           echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
           echo "  🚨 postmortem-pilot starting"
           echo "  Diff: $BEFORE → $AFTER"
-          echo "  Logs: ${LOG_FILE:-example_logs/sample.log}"
-          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-
-          if [ -n "$LOG_FILE" ]; then
-            postmortem-pilot run \
-              --before "$BEFORE" \
-              --after "$AFTER" \
-              --log-file "$LOG_FILE" \
-              --output postmortem.md
-          else
-            postmortem-pilot run \
-              --before "$BEFORE" \
-              --after "$AFTER" \
-              --output postmortem.md
-          fi
-
-      - name: 📄 Show generated postmortem
-        run: |
-          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-          echo "  Generated postmortem.md:"
-          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-          cat postmortem.md
-
-      - name: 💾 Commit postmortem.md back to repo
-        run: |
-          git config user.name  "postmortem-pilot[bot]"
-          git config user.email "postmortem-pilot[bot]@users.noreply.github.com"
-          git add postmortem.md
-          if git diff --staged --quiet; then
-            echo "No changes to postmortem.md — skipping commit."
-          else
-            git commit -m "🚨 postmortem: auto-generated report for $(git rev-parse --short HEAD) [skip ci]"
-            git push
-            echo "✅ postmortem.md committed."
-          fi
-
-      - name: 💬 Post summary as workflow summary
-        if: always()
-        run: |
-          echo "## 🚨 Postmortem Report" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "| | |" >> $GITHUB_STEP_SUMMARY
-          echo "|---|---|" >> $GITHUB_STEP_SUMMARY
-          echo "| **Commit** | \`$(git rev-parse --short HEAD)\` |" >> $GITHUB_STEP_SUMMARY
-          echo "| **Report** | \`postmortem.md\` committed to repo |" >> $GITHUB_STEP_SUMMARY
-          echo "| **AI Mode** | $([ -n '${{ secrets.GROQ_API_KEY }}' ] && echo '✅ Groq/Llama3' || echo '📝 Template mode') |" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "### Preview" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          head -40 postmortem.md >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "*See full report in \`postmortem.md\`*" >> $GITHUB_STEP_SUMMARY
+          echo "  Logs​​​​​​​​​​​​​​​​
