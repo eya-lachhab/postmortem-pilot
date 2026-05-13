@@ -42,7 +42,7 @@ In GitHub Actions, this runs **automatically after every push to main**.
 ### 1. Install
 
 ```bash
-pip install postmortem-pilot
+# pip install postmortem-pilot : roadmap, will be released soon
 # or for development:
 git clone https://github.com/eya-lachhab/postmortem-pilot
 cd postmortem-pilot
