@@ -69,3 +69,10 @@ jobs:
               --after "$AFTER" \
               --output postmortem.md
           fi
+
+      - name: 📤 Upload postmortem artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: postmortem-report
+          path: postmortem.md
+          if-no-files-found: error
