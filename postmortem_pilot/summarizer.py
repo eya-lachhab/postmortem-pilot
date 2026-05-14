@@ -9,8 +9,7 @@ from typing import Any
 import requests
 
 GROQ_API_URL = "https://api.groq.com/openai/v1/chat/completions"
-MODEL = "allam-2-7b"  # Free, fast, great for summarization
-
+MODEL = "allam-2-7b" # Free, fast, great for summarization
 
 def _build_prompt(diff_data: dict[str, Any], log_data: dict[str, Any]) -> str:
     """Build a concise prompt for the LLM."""
@@ -97,7 +96,17 @@ def summarize(
         "messages": [
             {
                 "role": "system",
-                "content": "You are a senior DevOps engineer. You write clear, concise, actionable postmortem summaries. No fluff.",
+                "content": (
+                    "You are a senior DevOps engineer writing concise, accurate postmortems. "
+                    "CRITICAL RULES:\n"
+                    "1. The git diff and the log errors are INDEPENDENT data sources. "
+                    "Do NOT assume log errors were caused by the code changes unless there is a clear, direct relationship.\n"
+                    "2. Analyze the git diff to understand what code changed.\n"
+                    "3. Analyze the logs to understand what runtime errors occurred.\n"
+                    "4. Only connect them if the changed files are obviously related to the error (e.g. a changed DB config file AND DB connection errors).\n"
+                    "5. If the logs show errors unrelated to the diff, say so explicitly.\n"
+                    "6. Never invent failures or issues not present in the data. No fluff."
+                ),
             },
             {"role": "user", "content": prompt},
         ],
@@ -114,13 +123,7 @@ def summarize(
         )
         response.raise_for_status()
         data = response.json()
-        try:
-            content = data["choices"][0]["message"]["content"]
-            if isinstance(content, str):
-                return content.strip()
-            return None
-        except (KeyError, TypeError):
-            return None
+        return data["choices"][0]["message"]["content"].strip()
     except requests.exceptions.Timeout:
         return None
     except requests.exceptions.HTTPError as e:
