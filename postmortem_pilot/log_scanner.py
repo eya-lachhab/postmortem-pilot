@@ -7,7 +7,6 @@ from collections import Counter
 from pathlib import Path
 from typing import Any
 
-
 # Patterns for log level detection
 LEVEL_PATTERNS = {
     "error": re.compile(r"\b(ERROR|CRITICAL|FATAL|Exception|Traceback|5\d\d)\b", re.IGNORECASE),
@@ -57,7 +56,6 @@ def scan_logs(log_path: str, max_lines: int = 5000) -> dict[str, Any]:
         result["error"] = f"Log file not found: {log_path}"
         return result
 
-    error_messages: list[str] = Counter()  # type: ignore
     sample_errors: list[str] = []
     notable_events: list[str] = []
     error_counter: Counter[str] = Counter()
