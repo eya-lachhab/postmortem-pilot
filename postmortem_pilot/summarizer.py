@@ -9,7 +9,7 @@ from typing import Any
 import requests
 
 GROQ_API_URL = "https://api.groq.com/openai/v1/chat/completions"
-MODEL = "llama3-8b-8192"  # Free, fast, great for summarization
+MODEL = "allam-2-7b"  # Free, fast, great for summarization
 
 
 def _build_prompt(diff_data: dict[str, Any], log_data: dict[str, Any]) -> str:
