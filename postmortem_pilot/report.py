@@ -131,7 +131,7 @@ TEMPLATE = """\
 
 ---
 
-*postmortem-pilot v{{ version }} | Apache 2.0 | https://github.com/yourusername/postmortem-pilot*
+*postmortem-pilot v{{ version }} | Apache 2.0 | https://github.com/eya-lachhab/postmortem-pilot*
 """
 
 
