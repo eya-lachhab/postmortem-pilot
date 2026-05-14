@@ -123,7 +123,7 @@ def summarize(
         )
         response.raise_for_status()
         data = response.json()
-        return data["choices"][0]["message"]["content"].strip()
+        return str(data["choices"][0]["message"]["content"]).strip()
     except requests.exceptions.Timeout:
         return None
     except requests.exceptions.HTTPError as e:
