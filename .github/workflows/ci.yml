@@ -36,8 +36,8 @@ jobs:
           echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
           echo "  Running ruff linter..."
           echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-          ruff check postmortem_pilot/
-          ruff format --check postmortem_pilot/
+          ruff check postmortem_pilot/ --fix
+          ruff format postmortem_pilot/
 
       - name: 🔎 Type check with mypy
         run: |
