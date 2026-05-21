@@ -192,4 +192,3 @@ PRs welcome! Please run `pytest` and `ruff check` before submitting.
 Apache 2.0 — see [LICENSE](LICENSE).
 
 Built with ❤️ by the community. Free forever.
-# updated
